@@ -1,0 +1,10 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Entrar · Financeiro{% endblock %}
+{% block content %}
+<form method="post" class="login card">{% csrf_token %}
+  <h2 style="margin-top:0">Entrar</h2>
+  {{ form.as_div }}
+  <input type="hidden" name="next" value="{{ next }}">
+  <button>Entrar</button>
+</form>
+{% endblock %}

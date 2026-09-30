@@ -1,0 +1,62 @@
+{% extends "dashboard/base.html" %}
+{% load l10n %}
+{% block title %}{{ titulo_mes }} · Financeiro{% endblock %}
+{% block content %}
+<div class="mes">
+  <a href="?mes={{ mes_anterior }}" aria-label="Mês anterior">‹</a>
+  <h1>{{ titulo_mes }}</h1>
+  <a href="?mes={{ mes_seguinte }}" aria-label="Próximo mês">›</a>
+</div>
+
+<div class="grid">
+  <div class="card"><small>Entradas</small><strong class="pos">R$ {{ entradas|floatformat:"2g" }}</strong><em>inclui o Uber</em></div>
+  <div class="card"><small>Saídas pagas</small><strong>R$ {{ saidas_pagas|floatformat:"2g" }}</strong></div>
+  <div class="card"><small>A pagar</small><strong>R$ {{ a_pagar|floatformat:"2g" }}</strong><em>fixos + parcelas + outros</em></div>
+  <div class="card"><small>Saldo previsto</small><strong class="{% if saldo_previsto < 0 %}neg{% else %}pos{% endif %}">R$ {{ saldo_previsto|floatformat:"2g" }}</strong><em>saldo atual: R$ {{ saldo_atual|floatformat:"2g" }}</em></div>
+</div>
+
+<h2>Uber</h2>
+<div class="grid">
+  <div class="card"><small>Ganho bruto</small><strong>R$ {{ uber.ganho|floatformat:"2g" }}</strong><em>{{ uber.turnos }} turno(s)</em></div>
+  <div class="card"><small>Gastos do carro</small><strong>R$ {{ uber.gastos|floatformat:"2g" }}</strong><em>categorias marcadas como Uber</em></div>
+  <div class="card"><small>Lucro líquido</small><strong class="{% if uber.liquido < 0 %}neg{% else %}pos{% endif %}">R$ {{ uber.liquido|floatformat:"2g" }}</strong></div>
+  <div class="card"><small>Líquido por hora</small><strong>{% if uber.liquido_por_hora is None %}—{% else %}R$ {{ uber.liquido_por_hora|floatformat:"2g" }}{% endif %}</strong><em>{{ uber.horas|floatformat:"1g" }} h trabalhadas</em></div>
+  <div class="card"><small>Líquido por km</small><strong>{% if uber.liquido_por_km is None %}—{% else %}R$ {{ uber.liquido_por_km|floatformat:"2g" }}{% endif %}</strong><em>{{ uber.km|floatformat:"1g" }} km rodados</em></div>
+</div>
+
+<h2>Gastos fixos do mês <span class="tag pendente">falta R$ {{ fixos_pendente|floatformat:"2g" }}</span></h2>
+{% include "dashboard/_tabela.html" with itens=fixos %}
+
+<h2>Parcelas do mês <span class="tag pendente">falta R$ {{ parcelas_pendente|floatformat:"2g" }}</span></h2>
+{% include "dashboard/_tabela.html" with itens=parcelas %}
+
+<h2>Compras parceladas em aberto</h2>
+{% if compras_abertas %}
+<div class="wrap"><table>
+  <tr><th>Compra</th><th class="r">Parcelas restantes</th><th class="r">Ainda devo</th></tr>
+  {% for c in compras_abertas %}
+  <tr><td>{{ c.descricao }}</td><td class="r">{{ c.restantes }} de {{ c.num_parcelas }}</td><td class="r">R$ {{ c.devendo|floatformat:"2g" }}</td></tr>
+  {% endfor %}
+</table></div>
+{% else %}<p class="vazio">Nenhuma compra parcelada em aberto.</p>{% endif %}
+
+<h2>Gastos por categoria</h2>
+{% if por_categoria %}
+<div class="wrap"><table>
+  {% for c in por_categoria %}
+  <tr><td>{{ c.nome }}</td><td style="width:40%"><div class="bar"><span style="width:{{ c.pct|unlocalize }}%"></span></div></td><td class="r">R$ {{ c.total|floatformat:"2g" }}</td></tr>
+  {% endfor %}
+</table></div>
+{% else %}<p class="vazio">Sem gastos neste mês.</p>{% endif %}
+
+<h2>Últimos lançamentos</h2>
+{% if ultimos %}
+<div class="wrap"><table>
+  <tr><th>Data</th><th>Descrição</th><th>Categoria</th><th class="r">Valor</th></tr>
+  {% for l in ultimos %}
+  <tr><td>{{ l.data|date:"d/m" }}</td><td>{{ l.descricao|default:"—" }}</td><td>{{ l.categoria }}</td>
+      <td class="r {% if l.tipo == 'entrada' %}pos{% endif %}">{% if l.tipo == 'entrada' %}+{% else %}−{% endif %} R$ {{ l.valor|floatformat:"2g" }}</td></tr>
+  {% endfor %}
+</table></div>
+{% else %}<p class="vazio">Nenhum lançamento neste mês.</p>{% endif %}
+{% endblock %}

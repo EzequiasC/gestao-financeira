@@ -1,0 +1,18 @@
+{% load l10n %}
+{% if itens %}
+<div class="wrap"><table>
+  <tr><th>Vencimento</th><th>Descrição</th><th class="r">Valor</th><th>Situação</th><th></th></tr>
+  {% for l in itens %}
+  <tr>
+    <td>{{ l.data|date:"d/m" }}</td>
+    <td>{{ l.descricao }}</td>
+    <td class="r">R$ {{ l.valor|floatformat:"2g" }}</td>
+    <td><span class="tag {{ l.status }}">{{ l.get_status_display }}</span></td>
+    <td class="r">{% if l.status == 'pendente' %}
+      <form method="post" action="{% url 'marcar_pago' l.pk %}">{% csrf_token %}
+        <input type="hidden" name="mes" value="{{ mes_chave }}"><button class="btn">Marcar pago</button></form>
+    {% endif %}</td>
+  </tr>
+  {% endfor %}
+</table></div>
+{% else %}<p class="vazio">Nada por aqui neste mês.</p>{% endif %}

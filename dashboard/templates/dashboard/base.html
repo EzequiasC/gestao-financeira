@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Financeiro{% endblock %}</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--tx:#1f1f1c;--mut:#6b6a63;--bd:#e3e1d8;--ok:#0f6e56;--bad:#a32d2d;--warn:#854f0b;--acc:#534ab7;--okbg:#e1f5ee;--badbg:#fcebeb;--warnbg:#faeeda}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1a18;--card:#242422;--tx:#eceae2;--mut:#a3a198;--bd:#38382f;--ok:#5dcaa5;--bad:#f09595;--warn:#ef9f27;--acc:#afa9ec;--okbg:#04342c;--badbg:#501313;--warnbg:#412402}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--bd);background:var(--card)}
+header b{font-weight:600}header a,header button{color:var(--mut);font-size:13px;margin-left:12px;background:none;border:0;cursor:pointer;text-decoration:none;font-family:inherit}
+main{max-width:980px;margin:0 auto;padding:16px}
+h2{font-size:16px;font-weight:600;margin:28px 0 10px}
+.mes{display:flex;align-items:center;justify-content:center;gap:16px;margin:4px 0 16px}
+.mes h1{font-size:20px;font-weight:600;margin:0;min-width:180px;text-align:center}
+.mes a{color:var(--acc);text-decoration:none;font-size:22px;padding:0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px}
+.card small{display:block;color:var(--mut);font-size:12px}
+.card strong{font-size:20px;font-weight:600}
+.card em{display:block;font-style:normal;color:var(--mut);font-size:12px;margin-top:2px}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+td,th{padding:9px 12px;text-align:left;border-bottom:1px solid var(--bd);font-size:14px}
+th{color:var(--mut);font-weight:500;font-size:12px}tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right;white-space:nowrap}
+.wrap{overflow-x:auto}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.tag.pago{background:var(--okbg);color:var(--ok)}.tag.pendente{background:var(--warnbg);color:var(--warn)}
+.btn{font:inherit;font-size:12px;padding:3px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
+.bar{background:var(--bd);height:8px;border-radius:4px;min-width:80px}.bar span{display:block;height:8px;border-radius:4px;background:var(--acc)}
+.vazio{color:var(--mut);padding:12px 0}
+.login{max-width:340px;margin:60px auto}.login input{width:100%;padding:8px;margin:4px 0 12px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx)}
+.login button{width:100%;padding:10px;border:0;border-radius:8px;background:var(--acc);color:#fff;font:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <b>Controle financeiro</b>
+  <span>
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}">Painel</a>
+      {% if user.is_staff %}<a href="{% url 'admin:index' %}">Cadastros</a>{% endif %}
+      <form method="post" action="{% url 'logout' %}" style="display:inline">{% csrf_token %}<button>Sair</button></form>
+    {% endif %}
+  </span>
+</header>
+<main>{% block content %}{% endblock %}</main>
+</body>
+</html>
